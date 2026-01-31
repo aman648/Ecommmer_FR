@@ -1,13 +1,21 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 import User as User
 import Services as Services
-import GenerateJWT as GenerateJWT
+from GenerateJWT import generateJWT
 
 
 
 app = Flask(__name__)
 CORS(app)
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
+jwt = JWTManager(app)
+
+#welcome route 
+@app.route('/', methods=['GET'])
+def welcome():
+    return jsonify({"message": "Welcome to the E-commerce API"}), 200
 
 # //API endpoint for user registration
 @app.route('/api/register', methods=['POST'])
@@ -26,13 +34,14 @@ def register():
 # //API endpoint for user login
 @app.route('/api/login', methods=['POST'])
 def login():
-    if request['username'] is None or request['password'] is None:
+    userinfo = request.get_json()
+    if userinfo['username'] is None or userinfo['password'] is None:
         return jsonify({"error": "Missing required fields"}), 400
-    authenticated = Services.authenticate_user(request['username'], request['password'])
+    authenticated = Services.authenticate_user(userinfo['username'], userinfo['password'])
     if not authenticated:
         return jsonify({"error": "Invalid credentials"}), 401
     
-    jwt_token = GenerateJWT.generate_jwt(request['username'])
+    jwt_token = generateJWT(userinfo['username'])
     return jsonify({"token": jwt_token}), 200
 
 
