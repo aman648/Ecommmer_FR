@@ -7,15 +7,22 @@ from SQLdb import sqlDBConn
 
 db = sqlDBConn()
 db.execute_query('''CREATE TABLE IF NOT EXISTS users
-              (user_id TEXT PRIMARY KEY, username TEXT, password TEXT, email TEXT)''')
+              (user_id integer PRIMARY KEY autoincrement, username TEXT, password TEXT, email TEXT)''')
 
-
+def reset_password(username, new_password):
+    # Logic to reset a user's password
+    hashed_password = hash_password(new_password)
+    query = "UPDATE users SET password = ? WHERE username = ?"
+    params = (hashed_password, username)
+    db.execute_query(query, params)
+    print("Password reset for user:", username)
+    return True
 def register_user(user):
       
         # Logic to add user to the database
        
-        query = "INSERT INTO users (user_id, username, password, email) VALUES (?, ?, ?, ?)"
-        params = (user.user_id, user.username, user.password, user.email)
+        query = "INSERT INTO users ( username, password, email) VALUES (?, ?, ?)"
+        params = (user.username, user.password, user.email)
         db.execute_query(query, params)
         if db:
             print("User registered:", user.username)
