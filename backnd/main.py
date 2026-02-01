@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required
-import User as User
 import Services as Services
 from GenerateJWT import generateJWT
-
+from Models import User as User
 
 
 app = Flask(__name__)
@@ -37,9 +36,8 @@ def reset_password():
     if not r1:
         return jsonify({"error": "Failed to reset password"}), 500
     return jsonify({"message": "Password reset successfully"}), 200
-   
-    
-    return jsonify({"message": "Password reset successfully"}), 200
+
+
 @app.route('/api/register', methods=['POST'])
 def register():
     if 'username' not in request.get_json() or 'email' not in request.get_json() or 'password' not in request.get_json():
@@ -68,6 +66,18 @@ def login():
     
     jwt_token = generateJWT(userinfo['username'])
     return jsonify({"token": jwt_token}), 200
+
+#//API endpoint for user products
+@jwt_required()
+@app.route('/api/products', methods=['GET'])
+def products():
+    # add claim for jwt later:
+    sample_products = [
+        {"product_id": 1, "name": "Product 1", "description": "Description 1", "price": 10.0, "stock": 100},
+        {"product_id": 2, "name": "Product 2", "description": "Description 2", "price": 20.0, "stock": 50},
+    ]
+    return jsonify({"products": sample_products}), 200
+
 
 
 
