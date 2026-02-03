@@ -8,6 +8,8 @@ from SQLdb import sqlDBConn
 db = sqlDBConn()
 db.execute_query('''CREATE TABLE IF NOT EXISTS users
               (user_id integer PRIMARY KEY autoincrement, username TEXT, password TEXT, email TEXT)''')
+db.execute_query('''CREATE TABLE IF NOT EXISTS products
+              (product_id integer PRIMARY KEY autoincrement, name TEXT, description TEXT, price REAL, stock INTEGER, is_active BOOLEAN)''')
 
 def reset_password(username, new_password):
     # Logic to reset a user's password
@@ -56,3 +58,31 @@ def hash_password(password):
     print(hex_dig)
     return hex_dig
 
+
+def UploadProduct(product):
+    # Logic to upload a product to the database
+    query = "INSERT INTO products (name, description, price, stock, is_active) VALUES (?, ?, ?, ?, ?)"
+    params = (product.name, product.description, product.price, product.stock, product.is_active)
+    db.execute_query(query, params)
+    print("Product uploaded:", product.name)
+    if db:
+         return True
+    return False
+
+def get_all_products():
+    # Logic to retrieve all products from the database
+    query = "SELECT * FROM products"
+    results = db.execute_query(query)
+    products = []
+    for row in results:
+        product = {
+            'product_id': row[0],
+            'name': row[1],
+            'description': row[2],
+            'price': row[3],
+            'stock': row[4],
+            'is_active': row[5]
+        }
+        products.append(product)
+    print("Retrieved products:", products)
+    return products

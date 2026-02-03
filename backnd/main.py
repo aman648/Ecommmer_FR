@@ -4,6 +4,7 @@ from flask_jwt_extended import JWTManager, jwt_required
 import Services as Services
 from GenerateJWT import generateJWT
 from Models import User as User
+from Models import Products as Products
 
 
 app = Flask(__name__)
@@ -69,14 +70,32 @@ def login():
 
 #//API endpoint for user products
 @jwt_required()
-@app.route('/api/products', methods=['GET'])
+@app.route('/api/products', methods=['POST'])
 def products():
-    # add claim for jwt later:
-    sample_products = [
-        {"product_id": 1, "name": "Product 1", "description": "Description 1", "price": 10.0, "stock": 100},
-        {"product_id": 2, "name": "Product 2", "description": "Description 2", "price": 20.0, "stock": 50},
-    ]
-    return jsonify({"products": sample_products}), 200
+    products = request.get_json()
+    
+
+    product1 = Products.Products(
+        product_id=products.get("product_id"),
+        name=products.get("name"),
+        description=products.get("description"),
+        price=products.get("price"),
+        stock=products.get("stock")
+    )
+    addproduct = Services.UploadProduct(product1)
+    if not addproduct:
+        return jsonify({"error": "Failed to create products"}), 500
+        
+
+    return jsonify({"products created": products}), 200
+
+@jwt_required()
+@app.route('/api/getproducts', methods=['GET'])
+def get_products():
+    products = Services.get_all_products()
+    if products is None:
+        return jsonify({"error": "Failed to retrieve products"}), 500
+    return jsonify({"products": products}), 200
 
 
 
