@@ -60,7 +60,7 @@ export default function Register() {
       <br />
       <input type="submit" value="register" />
     </form>
-   {/* {response && <p>User Register successfully</p>} */}
+   {response && <p>User Register successfully</p>}
    
 
 
