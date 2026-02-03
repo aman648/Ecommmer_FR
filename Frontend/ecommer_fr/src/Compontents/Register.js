@@ -7,19 +7,15 @@ export default function Register() {
   const[Confirm_password,setConfrim_password] = useState("");
   const handlesubmit =(e)=>
   {
+    if(!email || !name ||!password){
+      alert("Please fill the complete form");
+    }
      e.preventDefault();
      
 
 
   }
-  const Matchpassword = (e)=>{
-    setConfrim_password(e);
-    if(Confirm_password ===password){
-      return true;
-
-    }
-    return false;
-  }
+  const ISmisMatchpassword = Confirm_password && password !== Confirm_password;
 
   return (
     <>
@@ -40,8 +36,8 @@ export default function Register() {
       </label>
        <label>
          Confirm Password:
-        <input type="password" name="Confirm password" value={Confirm_password} onChange={(e)=>Matchpassword(e.target.value)} />
-        {Matchpassword && <p>password does not password</p>}
+        <input type="password" name="Confirm password" value={Confirm_password} onChange={(e)=>setConfrim_password(e.target.value)} />
+        {ISmisMatchpassword && <p>password does not password</p>}
       </label>
       <br />
       <input type="submit" value="register" />
