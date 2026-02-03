@@ -1,18 +1,37 @@
 import React, { useState } from 'react'
+import Axios from 'axios';
+import axios from 'axios';
 
 export default function Register() {
   const[email,setemail] = useState("");
   const[name,setname] = useState("");
   const[password,setpassword] = useState("");
   const[Confirm_password,setConfrim_password] = useState("");
+  const[response,setresponse]=useState("");
   const handlesubmit =(e)=>
   {
     if(!email || !name ||!password){
       alert("Please fill the complete form");
     }
-     e.preventDefault();
-     
+    e.preventDefault();
+    const user = {
+      email,
+      name,
+      password,
+    };
+    try
+    {
+      const url = "http://127.0.0.1:5000//api/Register"
+      axios.post(url,user).then(
+        response => setresponse(response.data)
+        
+      )
 
+    }
+    catch(err){
+      setresponse(err)
+
+    }
 
   }
   const ISmisMatchpassword = Confirm_password && password !== Confirm_password;
