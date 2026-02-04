@@ -13,17 +13,23 @@ export default function Register() {
       alert("Please fill the complete form");
     }
     e.preventDefault();
+    const username = name
     const user = {
       email,
-      name,
+      username,
       password,
     };
+   
     try
     {
-      const url = "http://127.0.0.1:5000//api/Register"
-      axios.post(url,user).then(
-        response => setresponse(response.data)
+      const url = "http://127.0.0.1:5000//api/register"
+      axios.post(url,user,{
+        headers: {
+        "Content-Type": "application/json"
+      }
+      }).then(
         
+        response => setresponse(response.data)
       )
 
     }
@@ -61,13 +67,8 @@ export default function Register() {
       <input type="submit" value="register" />
     </form>
    {response && <p>User Register successfully</p>}
-   
 
 
-
-    
-    
-    
     </>
   )
 }
