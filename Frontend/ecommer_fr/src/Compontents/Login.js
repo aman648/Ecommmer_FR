@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom'
 export default function Login() {
   const[email,setemail]=useState("");
   const[password,setpassword]=useState("");
-  const[response,setresponse] = useState("");
   const navigator = useNavigate();
-  const handleSubmit=(e)=>{
+  const handleSubmit= async (e)=>{
     e.preventDefault();
     if(!email || !password){
       alert("Please fill all the fields");
@@ -20,20 +19,21 @@ export default function Login() {
     }
     const url = "http://127.0.0.1:5000/api/login";
       try{
-        const response = axios.post(url,user,{
+        const response = await axios.post(url,user,{
           headers: {
         "Content-Type": "application/json"
        }
        })
+       console.log(typeof(response.data));
        const token = response.data.token;
        localStorage.setItem('auth_token',token);
-       console.log(response.data.token);
-       navigator("/welcome");
+      
+       navigator("/Welcome");
 
 
       }
       catch(err){
-        setresponse("Invalid Username or password");
+        console.log("error",err);
 
 
       }
@@ -56,7 +56,7 @@ export default function Login() {
       <br />
       <input type="submit" value="Login" />
     </form>
-    {response && <p>Login done</p>}
+   
     
     </>
   )
