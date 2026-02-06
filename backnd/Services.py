@@ -62,9 +62,9 @@ def hash_password(password):
 def UploadProduct(product):
     # Logic to upload a product to the database
     query = "INSERT INTO products (name, description, price, stock, is_active) VALUES (?, ?, ?, ?, ?)"
-    params = (product.name, product.description, product.price, product.stock, product.is_active)
+    params = (product['name'], product['description'], product['price'], product['stock'],True)
     db.execute_query(query, params)
-    print("Product uploaded:", product.name)
+    print("Product uploaded:", product['name'])
     if db:
          return True
     return False

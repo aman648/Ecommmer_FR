@@ -5,6 +5,7 @@ import Services as Services
 from GenerateJWT import generateJWT
 from Models import User as User
 from Models import Products as Products
+import json
 
 
 app = Flask(__name__)
@@ -92,6 +93,15 @@ def products():
 @jwt_required()
 @app.route('/api/getproducts', methods=['GET'])
 def get_products():
+
+    with open ("demdatauser.json","r") as file:
+        products = json.load(file)
+    
+    for p in products:
+        if(Services.UploadProduct(p)):
+           continue
+        
+    
     products = Services.get_all_products()
     if products is None:
         return jsonify({"error": "Failed to retrieve products"}), 500
