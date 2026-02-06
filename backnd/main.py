@@ -90,25 +90,35 @@ def products():
 
     return jsonify({"products created": products}), 200
 
-@jwt_required()
-@app.route('/api/getproducts', methods=['GET'])
-def get_products():
-
+@app.route('/api/Setproducts', methods=['GET'])
+def Setproducts():
     with open ("demdatauser.json","r") as file:
         products = json.load(file)
     
     for p in products:
         if(Services.UploadProduct(p)):
            continue
+    return jsonify('Product added Successfully')
         
-    
+
+@jwt_required()
+@app.route('/api/getproducts', methods=['GET'])
+def get_products(): 
     products = Services.get_all_products()
     if products is None:
         return jsonify({"error": "Failed to retrieve products"}), 500
     return jsonify({"products": products}), 200
 
-
-
+@app.route('/api/deleteproduct/<int:product_id>', methods=['DELETE'])
+def delete_products():
+    d = Services.delete_products(request['products_id'])
+    if d:
+        return jsonify("deleted sucessfully}=")
+    return jsonify('Unsucccessfull')
+   
+@app.route('/api/delete_all',methods=['DELETE'])
+def delete_all():
+    return Services.delete_all()
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -84,5 +84,18 @@ def get_all_products():
             'is_active': row[5]
         }
         products.append(product)
-    print("Retrieved products:", products)
+    # print("Retrieved products:", products)
     return products
+def delete_products(id):
+    # Logic to delete a product from the database
+    query = "DELETE FROM products WHERE product_id = ?"
+    params = (id)
+    db.execute_query(query, params)
+    print("Product deleted with ID:", product_id)
+    return True
+
+def delete_all():
+    query = "DELETE ALL FROM products"
+    db.execute_query(query)
+    print("work done")
+    return True
