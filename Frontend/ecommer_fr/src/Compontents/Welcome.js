@@ -1,7 +1,9 @@
-import React, {  useEffect } from 'react'
+import React, {  lazy, Suspense, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
+
+const Products = lazy(() => import('./Product'));
 
 export default function Welcome() {
     const navigator = useNavigate();
@@ -30,20 +32,20 @@ export default function Welcome() {
       
 
 
-    })
+    },[])
   return (
     <>
     <h1>Welcome</h1>
     <h3>Dasboard</h3>
     <button onClick={handlelogout}>Logout</button>
     <div className='products'>
+      <Suspense fallback={<div>Loading...</div>}>
         {products.map(
-            product => <div className='product' key={product.id}>
-                <h4>{product.name}</h4>
-                <p>{product.description}</p>
-                <p>{product.price}</p>
-            </div>
+            (product)=>(
+                <Products key={product.id} id={product.id} name={product.name} description={product.description} price={product.price}/>
+            )
         )}
+        </Suspense>
       
                 
     </div>

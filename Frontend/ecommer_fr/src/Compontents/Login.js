@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React , { useEffect, useState} from 'react'
 import { useNavigate } from 'react-router-dom'
+import './Auth.css';
 
 export default function Login() {
   const[email,setemail]=useState("");
@@ -51,7 +52,7 @@ export default function Login() {
    
     <>
     <h1>Login Page</h1>
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='auth-form'>
       <label>
         Username:
         <input type="text" name="username" value={email} onChange={(e)=>setemail(e.target.value)} />
@@ -64,7 +65,7 @@ export default function Login() {
       <br />
       <input type="submit" value="Login" />
     </form>
-   
+    
     
     </>
   )

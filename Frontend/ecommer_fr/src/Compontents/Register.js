@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios';
+import './Auth.css';
 
 export default function Register() {
   const[email,setemail] = useState("");
@@ -44,7 +45,7 @@ export default function Register() {
   return (
     <>
     <h1>Register </h1>
-    <form onSubmit={handlesubmit}> 
+    <form onSubmit={handlesubmit} className='auth-form'> 
       <label>
         Name:
         <input type="text" name="username" value={name} onChange={(e)=>setname(e.target.value)} />
@@ -66,6 +67,10 @@ export default function Register() {
       <br />
       <input type="submit" value="register" />
     </form>
+    <p className="auth-footer">
+          Already have an account? <span>Login</span>
+        </p>
+   
    {response && <p>User Register successfully</p>}
 
 
