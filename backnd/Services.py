@@ -11,6 +11,11 @@ db.execute_query('''CREATE TABLE IF NOT EXISTS users
 db.execute_query('''CREATE TABLE IF NOT EXISTS products
               (product_id integer PRIMARY KEY autoincrement, name TEXT, description TEXT, price REAL, stock INTEGER, is_active BOOLEAN)''')
 
+db.execute_query('''CREATE TABLE IF NOT EXISTS cart
+              (cart_id integer PRIMARY KEY autoincrement, user_id INTEGER REFERENCES users(user_id),created_at Timestamp default CURRENT_TIMESTAMP )''')
+
+db.execute_query('''CREATE TABLE IF NOT EXISTS Cartitems (cartitems_id integer PRIMARY KEY autoincrement, product_id INTEGER ,cart_id INTEGER REFERENCES cart(cart_id),created_at Timestamp default CURRENT_TIMESTAMP ) ''')
+
 def reset_password(username, new_password):
     # Logic to reset a user's password
     hashed_password = hash_password(new_password)
@@ -86,12 +91,36 @@ def get_all_products():
         products.append(product)
     # print("Retrieved products:", products)
     return products
+def create_user_cart(user_id):
+    query = "INSERT INTO cart (user_id) VALUES (?)"
+    param = user_id
+    if not db.execute_query(query,param):
+        return False
+    return True
+def add_cart(user_id, product_id):
+    # 1️⃣ Check if cart exists
+    query = "SELECT cart_id FROM cart WHERE user_id = ?"
+    params = (user_id)   # ✅ FIXED
+    result = db.execute_query(query, params)
+
+    # 2️⃣ Create cart if not exists
+    if not result:
+        create_user_cart(user_id)
+        result = db.execute_select(query, params)
+
+    # 3️⃣ Insert product into cart
+    cart_id = result[0][0]
+    query = "INSERT INTO Cartitems (product_id, cart_id) VALUES (?, ?)"
+    params = (product_id, cart_id)
+    db.execute_query(query, params)
+
+    return True
 def delete_products(id):
     # Logic to delete a product from the database
     query = "DELETE FROM products WHERE product_id = ?"
-    params = (id)
+    params = (id,)
     db.execute_query(query, params)
-    print("Product deleted with ID:", product_id)
+    print("Product deleted with ID:",id)
     return True
 
 def delete_all():

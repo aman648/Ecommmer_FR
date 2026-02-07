@@ -39,6 +39,16 @@ def reset_password():
         return jsonify({"error": "Failed to reset password"}), 500
     return jsonify({"message": "Password reset successfully"}), 200
 
+@app.route('/api/addcart', methods=['POST'])
+def add_cart():
+    if 'user_id' not in request.get_json() or 'product_id' not in request.get_json():
+        return jsonify({"error": "Missing required fields"}), 400
+    user_id = request.get_json()['user_id']
+    product_id = request.get_json()['product_id']
+    
+    if not Services.add_cart(user_id, product_id):
+        return jsonify({"error": "Failed to add product to cart"}), 500
+    return jsonify({"message": "Product added to cart successfully"}), 200
 
 @app.route('/api/register', methods=['POST'])
 def register():
