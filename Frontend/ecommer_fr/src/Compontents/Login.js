@@ -36,6 +36,7 @@ export default function Login() {
        console.log(typeof(response.data));
        const token = response.data.token;
        localStorage.setItem('auth_token',token);
+       localStorage.setItem('user_name',username);
       
        navigator("/Welcome");
 
@@ -51,6 +52,7 @@ export default function Login() {
   return (
    
     <>
+    <div className='login-card'>
     <h1>Login Page</h1>
     <form onSubmit={handleSubmit} className='auth-form'>
       <label>
@@ -64,7 +66,10 @@ export default function Login() {
       </label>
       <br />
       <input type="submit" value="Login" />
+     
     </form>
+     <button className="btn-primary" onClick={()=>navigator('/register')}>Register</button>
+     </div>
     
     
     </>

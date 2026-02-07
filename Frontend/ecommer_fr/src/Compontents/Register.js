@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import axios from 'axios';
 import './Auth.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const[email,setemail] = useState("");
@@ -8,6 +9,7 @@ export default function Register() {
   const[password,setpassword] = useState("");
   const[Confirm_password,setConfrim_password] = useState("");
   const[response,setresponse]=useState("");
+  const navigator = useNavigate();
   const handlesubmit =(e)=>
   {
     if(!email || !name ||!password){
@@ -44,6 +46,7 @@ export default function Register() {
 
   return (
     <>
+    <div class="login-card">
     <h1>Register </h1>
     <form onSubmit={handlesubmit} className='auth-form'> 
       <label>
@@ -68,10 +71,11 @@ export default function Register() {
       <input type="submit" value="register" />
     </form>
     <p className="auth-footer">
-          Already have an account? <span>Login</span>
+          Already have an account? <span onClick={()=>navigator('/login')}>Login</span>
         </p>
    
    {response && <p>User Register successfully</p>}
+   </div>
 
 
     </>
