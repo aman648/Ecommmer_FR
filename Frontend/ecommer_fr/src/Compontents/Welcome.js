@@ -2,6 +2,7 @@ import React, {  lazy, Suspense, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useState } from 'react';
+import Cartitems from './cartitems';
 
 const Products = lazy(() => import('./Product'));
 
@@ -9,6 +10,11 @@ export default function Welcome() {
     const navigator = useNavigate();
     const [products, setProducts] = useState([]);
     const name = localStorage.getItem("user_name");
+    const[cart, setCart] = useState(false);
+    const cartitems = ()=>{
+        setCart(!cart);
+
+    }
 
     const handlelogout = ()=>{
         if(localStorage.getItem("auth_token")){
@@ -45,6 +51,9 @@ export default function Welcome() {
     <div className="nav-right">
       <span className="username">Welcome, {name} 👋</span>
       <button className="logout-btn" onClick={handlelogout}>Logout</button>
+      <button className="cart-btn" onClick={cartitems}>
+        🛒  Cart
+      </button>
     </div>
   </nav>
   
@@ -58,6 +67,7 @@ export default function Welcome() {
         </Suspense>          
     </div>
     </div>
+    {cart && <Cartitems isopen={cart} isclose={()=>setCart(false)}/>}
 
 
 
