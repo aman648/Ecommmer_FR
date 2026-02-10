@@ -1,7 +1,11 @@
 import React from 'react'
 import '../App.css';
 
-export default function cartitems({isopen,isclose}) {
+
+export default function cartitems({isopen,isclose,cartitems,removecartitems}) {
+  // const totalprice = cartitems.reduce((total, item) => total + item.price, 0);
+  
+  
   return (
     <>
 
@@ -12,8 +16,14 @@ export default function cartitems({isopen,isclose}) {
         </div>
 
         <div className="cart-body">
-          <p>🧾 Product 1</p>
-          <p>🧾 Product 2</p>
+          {cartitems.map((item,index)=>(
+            <>
+            <p key={index}>🧾 {item.name}</p> <p>Price: ₹{item.price}</p>
+            <button className="cart-remove-btn" onClick={() => removecartitems(index)}>Remove</button>
+            </>
+            
+
+          ))}
         </div>
 
         <div className="cart-footer">
