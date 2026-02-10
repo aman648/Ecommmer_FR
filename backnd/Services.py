@@ -93,20 +93,21 @@ def get_all_products():
     return products
 def create_user_cart(user_id):
     query = "INSERT INTO cart (user_id) VALUES (?)"
-    param = user_id
+    param = (user_id,)
     if not db.execute_query(query,param):
         return False
     return True
 def add_cart(user_id, product_id):
     # 1️⃣ Check if cart exists
     query = "SELECT cart_id FROM cart WHERE user_id = ?"
-    params = (user_id)   # ✅ FIXED
-    result = db.execute_query(query, params)
+    params = (user_id,)   # ✅ FIXED
+    try:
+        result = db.execute_query(query, params)
 
     # 2️⃣ Create cart if not exists
-    if not result:
+    except Exception as e:
         create_user_cart(user_id)
-        result = db.execute_select(query, params)
+        result = db.execute_query(query, params)
 
     # 3️⃣ Insert product into cart
     cart_id = result[0][0]
