@@ -11,9 +11,7 @@ db.execute_query('''CREATE TABLE IF NOT EXISTS users
 db.execute_query('''CREATE TABLE IF NOT EXISTS products
               (product_id integer PRIMARY KEY autoincrement, name TEXT, description TEXT, price REAL, stock INTEGER, is_active BOOLEAN)''')
 
-db.execute_query('''CREATE TABLE IF NOT EXISTS cart
-              (cart_id integer PRIMARY KEY autoincrement, user_id INTEGER REFERENCES users(user_id),created_at Timestamp default CURRENT_TIMESTAMP )''')
-
+db.execute_query('''CREATE TABLE IF NOT EXISTS cart (cart_id integer PRIMARY KEY autoincrement, user_id INTEGER REFERENCES users(user_id), created_at Timestamp default CURRENT_TIMESTAMP)''')
 db.execute_query('''CREATE TABLE IF NOT EXISTS Cartitems (cartitems_id integer PRIMARY KEY autoincrement, product_id INTEGER ,cart_id INTEGER REFERENCES cart(cart_id),created_at Timestamp default CURRENT_TIMESTAMP ) ''')
 
 def reset_password(username, new_password):
@@ -91,31 +89,43 @@ def get_all_products():
         products.append(product)
     # print("Retrieved products:", products)
     return products
-def create_user_cart(user_id):
+def create_cart(user_id):
+    # Logic to create a cart for a user
     query = "INSERT INTO cart (user_id) VALUES (?)"
-    param = (user_id,)
-    if not db.execute_query(query,param):
-        return False
+    params = (user_id,)
+    db.execute_query(query, params)
+    print("Cart created for user ID:", user_id)
     return True
 def add_cart(user_id, product_id):
     # 1️⃣ Check if cart exists
     query = "SELECT cart_id FROM cart WHERE user_id = ?"
     params = (user_id,)   # ✅ FIXED
-    try:
-        result = db.execute_query(query, params)
-
-    # 2️⃣ Create cart if not exists
-    except Exception as e:
-        create_user_cart(user_id)
-        result = db.execute_query(query, params)
-
-    # 3️⃣ Insert product into cart
+    result = db.execute_query(query, params)
+    if not result:
+        print("User not found with ID:", user_id)
+        return False
     cart_id = result[0][0]
     query = "INSERT INTO Cartitems (product_id, cart_id) VALUES (?, ?)"
     params = (product_id, cart_id)
     db.execute_query(query, params)
 
     return True
+def get_cart_items(user_id):
+    # Logic to retrieve cart items for a user
+    query = "SELECT p.product_id, p.name, p.description, p.price, p.stock FROM products p JOIN Cartitems ci ON p.product_id = ci.product_id JOIN cart c ON ci.cart_id = c.cart_id WHERE c.user_id = ?"
+    params = (user_id,)
+    results = db.execute_query(query, params)
+    cart_items = []
+    for row in results:
+        item = {
+            'product_id': row[0],
+            'name': row[1],
+            'description': row[2],
+            'price': row[3],
+            'stock': row[4]
+        }
+        cart_items.append(item)
+    return cart_items
 def delete_products(id):
     # Logic to delete a product from the database
     query = "DELETE FROM products WHERE product_id = ?"
@@ -125,7 +135,7 @@ def delete_products(id):
     return True
 
 def delete_all():
-    query = "DELETE ALL FROM products"
+    query = "DELETE FROM products"
     db.execute_query(query)
     print("work done")
     return True

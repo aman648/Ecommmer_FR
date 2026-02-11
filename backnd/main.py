@@ -58,8 +58,10 @@ def register():
     password = Services.hash_password(request.get_json()['password'])
 
     new_user = User.Users(username=request.get_json()['username'], password=password, email=request.get_json()['email'])
-    Services.register_user(new_user)
-    if not new_user:
+    s1 = Services.register_user(new_user)
+    s = Services.create_cart(new_user.user_id)
+    
+    if not s1 or not s:
         return jsonify({"error": "Failed to register user"}), 500
     
 
@@ -128,7 +130,9 @@ def delete_products():
    
 @app.route('/api/delete_all',methods=['DELETE'])
 def delete_all():
-    return Services.delete_all()
+    if not Services.delete_all():
+        return jsonify({"error": "Failed to delete products"}), 500
+    return jsonify({"message": "All products deleted successfully"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
