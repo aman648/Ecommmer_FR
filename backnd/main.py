@@ -59,9 +59,9 @@ def register():
 
     new_user = User.Users(username=request.get_json()['username'], password=password, email=request.get_json()['email'])
     s1 = Services.register_user(new_user)
-    s = Services.create_cart(new_user.user_id)
     
-    if not s1 or not s:
+    
+    if not s1:
         return jsonify({"error": "Failed to register user"}), 500
     
 
@@ -79,7 +79,20 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
     
     jwt_token = generateJWT(userinfo['username'])
+    user_id = Services.getuserid(userinfo['username'])
+    Services.create_cart(user_id)
+    print("User ID for JWT generation:", user_id)
+    if jwt_token is None or user_id is None:
+        return jsonify({"error": "Failed to generate token"}), 500
     return jsonify({"token": jwt_token}), 200
+#return all the users::
+
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    users = Services.display_all_users()
+    if users is None:
+        return jsonify({"error": "Failed to retrieve users"}), 500
+    return jsonify({"users": users}), 200
 
 #//API endpoint for user products
 @jwt_required()
