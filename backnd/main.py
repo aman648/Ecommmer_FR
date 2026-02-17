@@ -46,7 +46,7 @@ def add_cart():
         return jsonify({"error": "Missing required fields"}), 400
     user_id = request.get_json()['user_id']
     product_id = request.get_json()['product_id']
-    
+    user_id = Services.getuserid(user_id)
     if not Services.add_cart(user_id, product_id):
         return jsonify({"error": "Failed to add product to cart"}), 500
     return jsonify({"message": "Product added to cart successfully"}), 200
@@ -56,9 +56,8 @@ def register():
     if 'username' not in request.get_json() or 'email' not in request.get_json() or 'password' not in request.get_json():
         return jsonify({"error": "Missing required fields"}), 400
         
-    password = Services.hash_password(request.get_json()['password'])
 
-    new_user = User.Users(username=request.get_json()['username'], password=password, email=request.get_json()['email'])
+    new_user = User.Users(username=request.get_json()['username'], password=request.get_json()['password'], email=request.get_json()['email'])
     s1 = Services.register_user(new_user)
 
     
