@@ -5,6 +5,7 @@ import Services as Services
 from GenerateJWT import generateJWT
 from Models import User as User
 from Models import Products as Products
+from flask_jwt_extended import create_access_token, get_jwt_identity
 import json
 
 
@@ -59,6 +60,7 @@ def register():
 
     new_user = User.Users(username=request.get_json()['username'], password=password, email=request.get_json()['email'])
     s1 = Services.register_user(new_user)
+
     
     
     if not s1:
@@ -74,17 +76,19 @@ def login():
     userinfo = request.get_json()
     if userinfo['username'] is None or userinfo['password'] is None:
         return jsonify({"error": "Missing required fields"}), 400
+    
     authenticated = Services.authenticate_user(userinfo['username'], userinfo['password'])
     if not authenticated:
         return jsonify({"error": "Invalid credentials"}), 401
     
-    jwt_token = generateJWT(userinfo['username'])
+    
     user_id = Services.getuserid(userinfo['username'])
-    Services.create_cart(user_id)
+    access_token = create_access_token(identity=user_id)
+    # Services.create_cart(user_id)
     print("User ID for JWT generation:", user_id)
-    if jwt_token is None or user_id is None:
+    if access_token is None or user_id is None:
         return jsonify({"error": "Failed to generate token"}), 500
-    return jsonify({"token": jwt_token}), 200
+    return jsonify({"token": access_token}), 200
 #return all the users::
 
 @app.route('/api/users', methods=['GET'])

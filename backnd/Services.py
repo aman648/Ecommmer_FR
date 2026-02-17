@@ -7,8 +7,9 @@ import hashlib
 connection = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="*",
-    database="my_db"
+    password="WelcomeSopra@33333",
+    database="my_db",
+    ssl_disabled=True
 )
 
 
@@ -32,7 +33,9 @@ def unhash_password(password, hashed_password):
 
 def register_user(user):
     query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s)"
+    print(user.password)
     hashed_password = hash_password(user.password)
+    print(hash_password)
     params = (user.username, hashed_password, user.email)
     
 
@@ -45,18 +48,17 @@ def register_user(user):
 
 def authenticate_user(username, password):
    
-
+    password = hash_password(password) 
     query = "SELECT password FROM users WHERE username = %s"
     db.execute(query, (username,))
-    result = db.fetchone()
+    result = db.fetchall()
      
-   
-    if unhash_password(password, result[0]):
+    if not result:
+        return False
+    if(unhash_password(password, result[0][0])):
         print("User authenticated:", username)
         return True
-    print("Authentication failed:", username ,result[0])
-    return False  
-
+    return False
 
 def reset_password(username, new_password):
     hashed_password = hash_password(new_password)
@@ -73,8 +75,9 @@ def reset_password(username, new_password):
 
 def getuserid(username):
     query = "SELECT user_id FROM users WHERE username = %s"
-    result = db.execute_query(query, (username,))
+    db.execute(query, (username,))
 
+    result = db.fetchall()
     if result:
         return result[0][0]
     return None
@@ -82,7 +85,8 @@ def getuserid(username):
 
 def display_all_users():
     query = "SELECT * FROM users"
-    results = db.execute_query(query)
+    db.execute(query,)
+    results = db.fetchall()
 
     users = []
     for row in results:
@@ -111,16 +115,16 @@ def UploadProduct(product):
         True
     )
 
-    db.execute_query(query, params)
-    db.commit()
-
-    print("Product uploaded:", product['name'])
-    return True
-
+    db.execute(query, params)
+    connection.commit()
+    if db.rowcount > 0:
+        print("Product uploaded:", product['name'])
+        return True
+    return False
 
 def get_all_products():
     query = "SELECT * FROM products"
-    results = db.execute_query(query)
+    results = db.execute(query)
 
     products = []
     for row in results:
