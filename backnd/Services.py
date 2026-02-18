@@ -67,7 +67,47 @@ def reset_password(username: str, new_password: str) -> bool:
         connection.rollback()
         print(f"Reset failed: {e}")
         return False
+def getcartitems(user_id: int):
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT p.product_id, p.name, p.description, p.price, p.stock
+                FROM products p
+                JOIN Cartitems ci ON p.product_id = ci.product_id
+                JOIN cart c ON ci.cart_id = c.cart_id
+                WHERE c.user_id = %s
+            """
+            cursor.execute(query, (user_id,))
+            rows = cursor.fetchall()
+            return [dict(row) for row in rows]
+    except Exception as e:
+        print(f"Get cart items failed: {e}")
+        return []
+    
+def remove_cart_item(user_id: int, product_id: int) -> bool:
+    try:
+        with connection.cursor() as cursor:
+            # Get cart_id for user
+            cursor.execute("SELECT cart_id FROM cart WHERE user_id = %s", (user_id,))
+            row = cursor.fetchone()
+            if not row:
+                return False  # no cart, so nothing to remove
+            cart_id = row['cart_id']
 
+            # Delete the specific item from Cartitems
+            cursor.execute(
+                "DELETE FROM Cartitems WHERE cart_id = %s AND product_id = %s",
+                (cart_id, product_id)
+            )
+        connection.commit()
+        success = cursor.rowcount > 0
+        if success:
+            print(f"Removed product {product_id} from user {user_id}'s cart")
+        return success
+    except Exception as e:
+        connection.rollback()
+        print(f"Remove cart item failed: {e}")
+        return False    
 def getuserid(username: str):
     try:
         with connection.cursor() as cursor:

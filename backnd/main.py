@@ -40,6 +40,28 @@ def reset_password():
         return jsonify({"error": "Failed to reset password"}), 500
     return jsonify({"message": "Password reset successfully"}), 200
 
+@app.route('/api/removecart', methods=['POST'])
+def remove_cart():
+    user_name = request.get_json()['user_id']
+    product_id = request.get_json()['product_id']
+    print(f"Received remove cart request for user: {user_name}, product_id: {product_id}")
+    user_id = Services.getuserid(user_name)
+    if not user_id:
+        return jsonify({"error": "Invalid user_id"}), 400
+    # Assuming Services.remove_cart(user_id, product_id) exists and removes a specific cart item for a user
+    if not Services.remove_cart_item(user_id, product_id):
+        return jsonify({"error": "Failed to remove cart item"}), 500
+    return jsonify({"message": "Cart item removed successfully"}), 200
+
+@app.route('/api/cartitems', methods=['POST'])
+def get_cart_items():
+    user_name = request.get_json()['user_id']
+    user_id = Services.getuserid(user_name)
+    if not user_name:
+        return jsonify({"error": "Missing user_id parameter"}), 400
+    items = Services.getcartitems(user_id)
+    return jsonify({"cart_items": items}), 200
+
 @app.route('/api/addcart', methods=['POST'])
 def add_cart():
     if 'user_id' not in request.get_json() or 'product_id' not in request.get_json():
