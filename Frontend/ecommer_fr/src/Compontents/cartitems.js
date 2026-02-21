@@ -1,9 +1,20 @@
 import React from 'react'
 import '../App.css';
+import { useNavigate } from 'react-router-dom';
 
 
-export default function cartitems({isopen,isclose,cartitems,removecartitems}) {
+  
+export default function Cartitems({isopen,isclose,cartitems,removecartitems}) {
   // const totalprice = cartitems.reduce((total, item) => total + item.price, 0);
+   const navigate = useNavigate();
+
+ 
+  const handlecheckout = () =>{
+    navigate('/Checkout')
+    
+  
+
+  }
   
   
   return (
@@ -27,7 +38,7 @@ export default function cartitems({isopen,isclose,cartitems,removecartitems}) {
         </div>
 
         <div className="cart-footer">
-          <button className="checkout-btn">Checkout</button>
+          <button className="checkout-btn" onClick={handlecheckout}>Checkout</button>
         </div>
       </div>
     </>

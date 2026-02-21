@@ -26,6 +26,7 @@ export default function Welcome() {
         }).then((res)=>{
             console.log(res.data);
             const data  = res.data;
+            localStorage.setItem("cart_items",JSON.stringify(data['cart_items']));
             
             setCartItems(data['cart_items']);
             // setCartItems(res.data);

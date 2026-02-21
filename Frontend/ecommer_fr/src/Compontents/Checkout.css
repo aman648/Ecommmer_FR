@@ -1,0 +1,151 @@
+/* ===== Page ===== */
+body {
+  background-color: #f4f6f8;
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.checkout-container {
+  max-width: 950px;
+  margin: 40px auto;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Headings ===== */
+.checkout-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #222;
+}
+
+.checkout-container h3 {
+  margin-top: 30px;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* ===== Table ===== */
+.checkout-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.checkout-table thead {
+  background-color: #1f2937;
+  color: white;
+}
+
+.checkout-table th,
+.checkout-table td {
+  padding: 14px;
+  text-align: center;
+}
+
+.checkout-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.checkout-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+/* ===== Address Form ===== */
+.address-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.address-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.address-form label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.address-form input {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.address-form input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* Full-width fields if needed */
+.address-form div:nth-child(3) {
+  grid-column: span 2;
+}
+
+/* ===== Total Section ===== */
+.total {
+  margin-top: 30px;
+  text-align: right;
+  font-size: 22px;
+  font-weight: bold;
+  color: #111;
+}
+
+/* ===== Button ===== */
+.place-order-btn {
+  display: block;
+  margin-left: auto;
+  margin-top: 15px;
+  padding: 14px 26px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  border: none;
+  border-radius: 7px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.place-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.35);
+}
+
+.place-order-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 700px) {
+  .checkout-container {
+    margin: 10px;
+    padding: 20px;
+  }
+
+  .address-form {
+    grid-template-columns: 1fr;
+  }
+
+  .address-form div:nth-child(3) {
+    grid-column: span 1;
+  }
+
+  .total {
+    text-align: left;
+  }
+
+  .place-order-btn {
+    width: 100%;
+  }
+}
