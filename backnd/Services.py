@@ -13,7 +13,9 @@ connection = pymysql.connect(
     autocommit=False                      # we control commit manually
 )
 
-# ------------------ PASSWORD HASH ------------------
+db = connection.cursor()  # alias for easier access in main.py
+
+
 def hash_password(password: str) -> str:
     encoded = password.encode('utf-8')
     hash_object = hashlib.sha256(encoded)

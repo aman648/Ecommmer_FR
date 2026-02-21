@@ -10,6 +10,17 @@ import json
 
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'pool_size': 5,               # small pool for dev
+    'max_overflow': 10,
+    'pool_timeout': 30,
+    'pool_recycle': 1800,         # recycle every 30 min (adjust lower if needed: 300 = 5 min)
+    'pool_pre_ping': True,        # PyMySQL + SQLAlchemy 1.4+ — pings before use → discards dead ones
+}
+
+# If using older SQLAlchemy (<1.4), fallback:
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 1800
+app.config['SQLALCHEMY_POOL_PRE_PING'] = True
 CORS(app)
 app.config["JWT_SECRET_KEY"] = "super-secret-key"
 jwt = JWTManager(app)
