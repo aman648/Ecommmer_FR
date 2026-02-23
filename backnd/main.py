@@ -7,6 +7,7 @@ from Models import User as User
 from Models import Products as Products
 from flask_jwt_extended import create_access_token, get_jwt_identity
 import json
+from sqlalchemy.pool import NullPool
 
 
 app = Flask(__name__)
@@ -17,6 +18,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     'pool_recycle': 1800,         # recycle every 30 min (adjust lower if needed: 300 = 5 min)
     'pool_pre_ping': True,        # PyMySQL + SQLAlchemy 1.4+ — pings before use → discards dead ones
 }
+
 
 # If using older SQLAlchemy (<1.4), fallback:
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 1800

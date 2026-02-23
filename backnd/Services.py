@@ -12,8 +12,25 @@ connection = pymysql.connect(
     cursorclass=cursors.DictCursor,   # rows come as dicts → row['user_id']
     autocommit=False                      # we control commit manually
 )
+from dbutils.pooled_db import PooledDB
 
-db = connection.cursor()  # alias for easier access in main.py
+pool = PooledDB(
+    creator=pymysql,                  # the driver
+    maxconnections=10,                # adjust to your needs
+    mincached=2,
+    maxcached=5,
+    blocking=True,
+    host="127.0.0.1",
+    user="root",
+    password="WelcomeSopra@33333",
+    database="my_db",
+    charset='utf8mb4',
+    cursorclass=cursors.DictCursor,
+    autocommit=False
+)
+
+
+db = pool.connection()  # alias for easier access in main.py
 
 
 def hash_password(password: str) -> str:
@@ -27,21 +44,21 @@ def check_password(plain_password: str, hashed_password: str) -> bool:
 # ------------------ USER ------------------
 def register_user(user):  # assuming user is an object with .username, .password, .email
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             hashed_password = hash_password(user.password)
             query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s)"
             cursor.execute(query, (user.username, hashed_password, user.email))
-        connection.commit()
+        db.commit()
         print(f"User registered: {user.username}")
         return True
     except Exception as e:
-        connection.rollback()
+        db.rollback()
         print(f"Register failed: {e}")
         return False
 
 def authenticate_user(username: str, password: str) -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             query = "SELECT password FROM users WHERE username = %s"
             cursor.execute(query, (username,))
             result = cursor.fetchone()  # one row or None
@@ -58,20 +75,20 @@ def authenticate_user(username: str, password: str) -> bool:
 
 def reset_password(username: str, new_password: str) -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             hashed = hash_password(new_password)
             query = "UPDATE users SET password = %s WHERE username = %s"
             cursor.execute(query, (hashed, username))
-        connection.commit()
+        db.commit()
         print(f"Password reset for: {username}")
         return cursor.rowcount > 0  # True only if actually updated someone
     except Exception as e:
-        connection.rollback()
+        db.rollback()
         print(f"Reset failed: {e}")
         return False
 def getcartitems(user_id: int):
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             query = """
                 SELECT p.product_id, p.name, p.description, p.price, p.stock
                 FROM products p
@@ -88,7 +105,7 @@ def getcartitems(user_id: int):
     
 def remove_cart_item(user_id: int, product_id: int) -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             # Get cart_id for user
             cursor.execute("SELECT cart_id FROM cart WHERE user_id = %s", (user_id,))
             row = cursor.fetchone()
@@ -112,7 +129,7 @@ def remove_cart_item(user_id: int, product_id: int) -> bool:
         return False    
 def getuserid(username: str):
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             query = "SELECT user_id FROM users WHERE username = %s"
             cursor.execute(query, (username,))
             row = cursor.fetchone()
@@ -123,7 +140,7 @@ def getuserid(username: str):
 
 def display_all_users():
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             cursor.execute("SELECT * FROM users")
             rows = cursor.fetchall()
             return [dict(row) for row in rows]  # already dicts
@@ -134,7 +151,7 @@ def display_all_users():
 # ------------------ PRODUCTS ------------------
 def UploadProduct(product):  # assuming product is dict now
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             query = """
                 INSERT INTO products (name, description, price, stock, is_active)
                 VALUES (%s, %s, %s, %s, %s)
@@ -158,7 +175,7 @@ def UploadProduct(product):  # assuming product is dict now
 
 def get_all_products():
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor: 
             cursor.execute("SELECT * FROM products")
             rows = cursor.fetchall()
             return [dict(row) for row in rows]  # safe even if already dicts
@@ -168,46 +185,46 @@ def get_all_products():
 
 def delete_products(product_id: int) -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db as cursor:
             cursor.execute("DELETE FROM products WHERE product_id = %s", (product_id,))
-        connection.commit()
+        db.commit()
         success = cursor.rowcount > 0
         if success:
             print(f"Deleted product: {product_id}")
         return success
     except Exception as e:
-        connection.rollback()
+        db.rollback()
         print(f"Delete product failed: {e}")
         return False
 
 def delete_all() -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db as cursor:
             cursor.execute("DELETE FROM products")
-        connection.commit()
+        db.commit()
         print("All products deleted")
         return True
     except Exception as e:
-        connection.rollback()
+        db.rollback()
         print(f"Delete all failed: {e}")
         return False
 
 # ------------------ CART ------------------
 def create_cart(user_id: int) -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db as cursor:
             cursor.execute("INSERT INTO cart (user_id) VALUES (%s)", (user_id,))
-        connection.commit()
+        db.commit()
         print(f"Cart created for user: {user_id}")
         return True
     except Exception as e:
-        connection.rollback()
+        db.rollback()
         print(f"Create cart failed: {e}")
         return False
 
 def add_cart(user_id: int, product_id: int) -> bool:
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             # Get or create cart
             cursor.execute("SELECT cart_id FROM cart WHERE user_id = %s", (user_id,))
             row = cursor.fetchone()
@@ -233,7 +250,7 @@ def add_cart(user_id: int, product_id: int) -> bool:
 
 def get_cart_items(user_id: int):
     try:
-        with connection.cursor() as cursor:
+        with db.cursor() as cursor:
             query = """
                 SELECT p.product_id, p.name, p.description, p.price, p.stock
                 FROM products p
