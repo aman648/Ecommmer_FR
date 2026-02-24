@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 export default function Checkout() {
     const name = localStorage.getItem("user_name");
     const [cartItems, setCartItems] = useState([]);
+    const [adeeliveryInfo, setAddDeliveryInfo] = useState("");
     useEffect(()=>{
         const items = JSON.parse(localStorage.getItem("cart_items"));
         if(!items){
@@ -33,8 +35,17 @@ export default function Checkout() {
         postalCode: data.get("postalCode")
     }
     console.log("delivery info", deliveryInfo);
+    setAddDeliveryInfo(deliveryInfo);
     alert("Information saved successfully");
    
+   }
+   const handlecheckout = ()=>{
+    if(!adeeliveryInfo){
+        alert("Please add delivery information before placing the order");
+        return;
+    }
+    localStorage.removeItem("cart_items");
+    navigator("/orderconfirmation");
    }
 
 
@@ -77,7 +88,7 @@ export default function Checkout() {
       <br />
       <button type="submit">Save Information</button>
     </form> 
-    <button className='btn btn-checkout' onClick={()=>{localStorage.removeItem("cart_items"); navigator("/orderconfirmation")}}>Place Order</button>
+    <button className='btn btn-checkout' onClick={handlecheckout}>Place Order</button>
     
 
     

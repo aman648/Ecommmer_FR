@@ -2,7 +2,6 @@ import React from 'react'
 
 export default function Orderconfirmation() {
     const handleclick = ()=>{
-        localStorage.removeItem("cart_items");
         window.location.href = '/welcome';
     }
   return (

@@ -1,16 +1,41 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import  axios  from 'axios';
 
 
   
 export default function Cartitems({isopen,isclose,cartitems,removecartitems}) {
   // const totalprice = cartitems.reduce((total, item) => total + item.price, 0);
    const navigate = useNavigate();
+  //  const [loading, setLoading] = useState(false);
 
  
   const handlecheckout = () =>{
-    navigate('/Checkout')
+    //make api call to add the cart items to the order and then navigate to checkout page
+         navigate('/Checkout');
+        // const url = "http://127.0.0.1:5000/api/addcart"
+        // setLoading(true);
+        // const user = {
+        //     user_id: localStorage.getItem("user_name"),
+        //     cart_items: cartitems
+        // }
+        // axios.post(url,user,{
+        //     headers:{
+        //         Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+        //     }
+        // }).then((res)=>{
+
+        //     console.log(res.data);
+        //     navigate('/Checkout')
+        //     setLoading(false);
+            
+        // }).catch((err)=>{
+        //   setLoading(false);
+        //     alert("Failed to proceed to checkout");
+        //     console.log(err);
+        // })
+ 
     
   
 
@@ -41,6 +66,7 @@ export default function Cartitems({isopen,isclose,cartitems,removecartitems}) {
           <button className="checkout-btn" onClick={handlecheckout}>Checkout</button>
         </div>
       </div>
+      
     </>
   )
 }
