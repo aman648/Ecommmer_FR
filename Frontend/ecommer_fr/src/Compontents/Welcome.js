@@ -47,43 +47,43 @@ export default function Welcome() {
         setCartItems(newcartitems);
         localStorage.setItem("cart_items",JSON.stringify(newcartitems));
         //make api call to remove the item from cart in backend
-        // const user = {
-        //     user_id: localStorage.getItem("user_name"),
-        //     product_id: cartItems[index].product_id
-        // }
-        // const url = "http://127.0.0.1:5000/api/removecart"
-        // axios.post(url,user,{
-        //     headers:{
-        //         'Content-Type': 'application/json',
-        //     }
-        // }).then((res)=>{
-        //     setCartItems(newcartitems);
-        //     localStorage.setItem("cart_items",JSON.stringify(newcartitems));
-        // }).catch((err)=>{
-        //     console.log(err);
-        // })
+        const user = {
+            user_id: localStorage.getItem("user_name"),
+            product_id: cartItems[index].product_id
+        }
+        const url = "http://127.0.0.1:5000/api/removecart"
+        axios.post(url,user,{
+            headers:{
+                'Content-Type': 'application/json',
+            }
+        }).then((res)=>{
+            setCartItems(newcartitems);
+            localStorage.setItem("cart_items",JSON.stringify(newcartitems));
+        }).catch((err)=>{
+            console.log(err);
+        })
     }
     const addtocart = (product)=>{
         //api call to add the product to cart in backend
         console.log("added to cart", product);
-        // const user = {
-        //     user_id: localStorage.getItem("user_name"),
-        //     product_id: product.id
-        // }
+        const user = {
+            user_id: localStorage.getItem("user_name"),
+            product_id: product.id
+        }
         setCartItems([...cartItems,product]);
         localStorage.setItem("cart_items",JSON.stringify([...cartItems,product]));
-        // const url = "http://127.0.0.1:5000/api/addcart"
-        // axios.post(url,user,{
-        //     headers:{
-        //         Authorization: `Bearer ${localStorage.getItem('auth_token')}`
-        //     }
-        // }).then((res)=>{
-        //     console.log(res.data);
-        //     setCartItems([...cartItems,product])
-        // }).catch((err)=>{
-        //     alert("Failed to add to cart");
-        //     console.log(err);
-        // })
+        const url = "http://127.0.0.1:5000/api/addcart"
+        axios.post(url,user,{
+            headers:{
+                Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+            }
+        }).then((res)=>{
+            console.log(res.data);
+            setCartItems([...cartItems,product])
+        }).catch((err)=>{
+            alert("Failed to add to cart");
+            console.log(err);
+        })
         
     }
 

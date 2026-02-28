@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
-import  axios  from 'axios';
+
 
 
   
@@ -14,12 +14,16 @@ export default function Cartitems({isopen,isclose,cartitems,removecartitems}) {
   const handlecheckout = () =>{
     //make api call to add the cart items to the order and then navigate to checkout page
          navigate('/Checkout');
-        // const url = "http://127.0.0.1:5000/api/addcart"
-        // setLoading(true);
-        // const user = {
-        //     user_id: localStorage.getItem("user_name"),
-        //     cart_items: cartitems
-        // }
+         if(cartitems == null){
+          alert("Cart is empty");
+         }
+          
+       
+ 
+    
+
+       
+       
         // axios.post(url,user,{
         //     headers:{
         //         Authorization: `Bearer ${localStorage.getItem('auth_token')}`
