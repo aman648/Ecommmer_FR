@@ -38,6 +38,33 @@ def welcome():
 def dashboard():
     jwt = request.headers.get('Authorization')
     return jsonify({"message": "This is the dashboard"}), 200
+
+# Route for Google login 
+@app.route('/api/google_login',methods=['POST'])
+def google_login():
+    if 'token' not in request.get_json():
+        return jsonify({"error":"Token is invalid"}),400
+    
+    token = request.get_json()['token']
+    user_info = Services.decode_google_id_token(token)
+    print(f"user name {user_info}")
+    email = user_info.get('email')
+    name = user_info.get('name')
+    new_user = User.Users(username=name, password="1233", email=email)
+    register_user = Services.register_user(new_user)
+    if register_user is None:
+        user_id = Services.getuserid(name)
+        create_user = Services.create_cart(user_id)
+    create_user = Services.create_cart()
+    if create_user is None:
+        return jsonify({"error":"error in user cart creation "}),500
+
+    jwt_token  = create_access_token(user_info.get('name'))
+    if jwt_token is None:
+        return jsonify({"error":"error while login"}),500
+    return jsonify({"token":jwt_token}),200
+
+
 # //API endpoint for user registration
 @app.route('/api/reset_password', methods=['POST'])
 def reset_password():

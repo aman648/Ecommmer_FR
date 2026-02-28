@@ -1,6 +1,13 @@
 import pymysql
 from pymysql import cursors
 import hashlib
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import os
+
+# Your Google **Web** Client ID (from Google Cloud Console → Credentials)
+# This MUST match the clientId used in your frontend (@react-oauth/google)
+WEB_CLIENT_ID = os.getenv("GOOGLE_WEB_CLIENT_ID")
 
 # Better: connection at module level, but cursor created per function
 connection = pymysql.connect(
@@ -45,17 +52,47 @@ def check_password(plain_password: str, hashed_password: str) -> bool:
 def register_user(user):  # assuming user is an object with .username, .password, .email
     try:
         with db.cursor() as cursor:
+         if getuserid(user.username) is None:
             hashed_password = hash_password(user.password)
             query = "INSERT INTO users (username, password, email) VALUES (%s, %s, %s)"
             cursor.execute(query, (user.username, hashed_password, user.email))
-        db.commit()
-        print(f"User registered: {user.username}")
-        return True
+            db.commit()
+            print(f"User registered: {user.username}")
+            return True
     except Exception as e:
         db.rollback()
         print(f"Register failed: {e}")
         return False
+    
 
+def decode_google_id_token(token: str):
+    
+    try:
+        # This fetches Google's public keys automatically and verifies:
+        # - Signature
+        # - exp (expiration)
+        # - aud (audience = your client ID)
+        # - iss (issuer = accounts.google.com)
+        id_info = id_token.verify_oauth2_token(
+            token,
+            requests.Request(),           # Handles fetching certs
+            WEB_CLIENT_ID                 # Required for audience check
+        )
+
+        # Optional: extra checks (recommended)
+        if id_info.get('hd'):  # If using Google Workspace / G Suite
+            if id_info['hd'] != "yourcompany.com":
+                raise ValueError("Wrong hosted domain")
+
+        # Token is valid → return the decoded claims
+        return id_info
+    except ValueError as ve:
+        # Invalid signature, expired, wrong audience, etc.
+        print(f"Token verification failed: {ve}")
+        raise
+    except Exception as e:
+        print(f"Unexpected error during token verification: {e}")
+        raise
 def authenticate_user(username: str, password: str) -> bool:
     try:
         with db.cursor() as cursor:
@@ -118,15 +155,16 @@ def remove_cart_item(user_id: int, product_id: int) -> bool:
                 "DELETE FROM Cartitems WHERE cart_id = %s AND product_id = %s",
                 (cart_id, product_id)
             )
-        connection.commit()
+        db.commit()
         success = cursor.rowcount > 0
         if success:
             print(f"Removed product {product_id} from user {user_id}'s cart")
         return success
     except Exception as e:
-        connection.rollback()
+        db.rollback()
         print(f"Remove cart item failed: {e}")
-        return False    
+        return False  
+      
 def getuserid(username: str):
     try:
         with db.cursor() as cursor:
@@ -212,9 +250,12 @@ def delete_all() -> bool:
 # ------------------ CART ------------------
 def create_cart(user_id: int) -> bool:
     try:
-        with db as cursor:
-            cursor.execute("INSERT INTO cart (user_id) VALUES (%s)", (user_id,))
-        db.commit()
+        with db.cursor() as cursor:
+            cursor.execute("SELECT cart_id FROM cart WHERE user_id = %s", (user_id,))
+            row = cursor.fetchone()
+            if not row:
+             cursor.execute("INSERT INTO cart (user_id) VALUES (%s)", (user_id,))
+        connection.commit()
         print(f"Cart created for user: {user_id}")
         return True
     except Exception as e:
