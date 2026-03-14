@@ -51,11 +51,14 @@ def google_login():
     email = user_info.get('email')
     name = user_info.get('name')
     new_user = User.Users(username=name, password="1233", email=email)
-    register_user = Services.register_user(new_user)
-    if register_user is None:
+    user_id = Services.getuserid(name)
+    if user_id is None:
+        print("user id not found")
+        Services.register_user(new_user)
         user_id = Services.getuserid(name)
-        create_user = Services.create_cart(user_id)
-    create_user = Services.create_cart()
+    
+    create_user = Services.create_cart(user_id)
+
     if create_user is None:
         return jsonify({"error":"error in user cart creation "}),500
 
@@ -205,6 +208,15 @@ def delete_products():
     if d:
         return jsonify("deleted sucessfully}=")
     return jsonify('Unsucccessfull')
+
+@app.route('/api/getproduct/<id>',methods=['GET'])
+def getproduct(id):
+
+    product = Services.get_product(id)
+    if product is None:
+        return jsonify({"error": "Failed to retrieve product"}), 500
+    print(product)
+    return jsonify({"product": product[0]}), 200
    
 @app.route('/api/delete_all',methods=['DELETE'])
 def delete_all():

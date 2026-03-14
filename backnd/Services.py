@@ -139,7 +139,16 @@ def getcartitems(user_id: int):
     except Exception as e:
         print(f"Get cart items failed: {e}")
         return []
-    
+def get_product(id: int):
+    try: 
+        with db.cursor() as cursor:
+            cursor.execute("Select * from products where product_id = %s",(id))
+            rows = cursor.fetchall()
+            return rows
+    except Exception as e:
+        print(f"Get cart items failed: {e}")
+        return []
+        
 def remove_cart_item(user_id: int, product_id: int) -> bool:
     try:
         with db.cursor() as cursor:
