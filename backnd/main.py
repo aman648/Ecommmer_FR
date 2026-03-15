@@ -209,6 +209,24 @@ def delete_products():
         return jsonify("deleted sucessfully}=")
     return jsonify('Unsucccessfull')
 
+@app.route('/api/addreview',methods=['POST'])
+def addcart():
+    data = request.get_json()
+    if data is None:
+        return jsonify({"Error": "Error user info is not thier"}),500
+    addview = Services.add_views(data['user_id'],data['product_id'],data['description'])
+    if addview:
+        return jsonify("Review Created"),200
+    return jsonify("Failed to create user"),500
+@app.route('/api/getreviews')
+def get_review_products():
+    data = request.get_json()
+    if data is None:
+        return jsonify({"Error": "Error user info is not thier"}),500
+    getviews = Services.get_reivews(data['user_id'],data['product_id'])
+    if getviews is None:
+        return jsonify({"No Review found"}),400
+    return jsonify({"Review":getviews}),200
 @app.route('/api/getproduct/<id>',methods=['GET'])
 def getproduct(id):
 

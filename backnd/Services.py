@@ -139,12 +139,32 @@ def getcartitems(user_id: int):
     except Exception as e:
         print(f"Get cart items failed: {e}")
         return []
-def get_product(id: int):
+def add_views(userid:id,product_id:int,description:str):
+    try: 
+        with db.cursor() as cursor:
+            cursor.execute("INSERT INTO ReviewsTable (user_id, product_id, description) VALUES (%s, %s, %s)",(userid,product_id,description))
+            db.commit()
+            return cursor.rowcount > 0
+    except Exception as e:
+        print(f"failed to add review: {e}")
+        return False
+       
+def get_reivews(userid:id,product_id:int):
+    try: 
+        with db.cursor() as cursor:
+            cursor.execute("Select * from ReviewsTable where user_id  = %s and product_id=%s",(userid,product_id))
+            rows = cursor.fetchall()
+            return rows
+    except Exception as e:
+        print(f"Get cart items failed: {e}")
+        return []
+        
+def get_product(id:int):
     try: 
         with db.cursor() as cursor:
             cursor.execute("Select * from products where product_id = %s",(id))
-            rows = cursor.fetchall()
-            return rows
+            rows = cursor.fetchone()
+            return [dict(row) for row in rows]
     except Exception as e:
         print(f"Get cart items failed: {e}")
         return []
