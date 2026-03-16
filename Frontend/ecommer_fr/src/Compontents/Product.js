@@ -1,12 +1,18 @@
 import React from 'react';
 import '../App.css';
+import { useNavigate } from 'react-router-dom';
 
-export default function Product({ id, name, description, price, handlecart }) {
+export default function Product({ id,img, name, description, price, handlecart }) {
   // ← Destructure the props you are actually passing
-
+   const navigator = useNavigate();
   const addToCart = () => {
     handlecart({ id, name, description, price });   // ← send the full product object
   };
+  const handleView = (id) =>{
+    // localStorage.setItem(product,"product");
+    console.log(id)
+    navigator(`/ViewProduct/${id}`);    
+  }
 
   return (
     <>
@@ -16,9 +22,10 @@ export default function Product({ id, name, description, price, handlecart }) {
           <span className="product-tile__price">₹{price}</span>
         </div>
         <p className="product-tile__description">{description}</p>
+        <img src={img} alt='h'></img>
 
         <div className="product-tile__footer">
-          <button className="btn btn-view">View</button>
+          <button className="btn btn-view" onClick={() =>handleView(id)}>View</button>
           <button className="btn btn-add" onClick={addToCart}>
             Add to Cart
           </button>

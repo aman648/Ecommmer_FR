@@ -33,18 +33,19 @@ export default function Login() {
       // Decode to get user info (email, name, picture, etc.)
       const decoded = jwtDecode(token);
       console.log('Decoded Google user:', decoded);
-      const res = await axios.post('http://127.0.0.1:5000/api/google-login', {
-      credential: token
+      const res = await axios.post('http://127.0.0.1:5000/api/google_login', {
+      token: token
     });
-    console.log(res.data);
-    token = res.data.token
+     console.log(res.data);
+     const google_id = decoded['sub']
 
       // Optional: Send this token to your backend to create/verify user session
       // e.g. axios.post('/api/google-login', { token })
       // Then get your own auth_token back
 
       // For now: store Google token & basic info
-      localStorage.setItem('auth_token',token);
+      localStorage.setItem('auth_token',res.data.token);
+      localStorage.setItem('user_id', google_id)
       localStorage.setItem('user_name', decoded.name || decoded.email);
       // You could store email, picture, etc.
 

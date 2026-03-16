@@ -132,7 +132,7 @@ export default function Welcome() {
       <Suspense fallback={<div>Loading...</div>}>
         {products.map(
             (product)=>(
-                <Products key={product.id} id={product.product_id} name={product.name} description={product.description} price={product.price} handlecart={addtocart} />
+                <Products key={product.id} id={product.product_id} img ={product.image_url } name={product.name} description={product.description} price={product.price} handlecart={addtocart} />
             )
         )}
         </Suspense>          

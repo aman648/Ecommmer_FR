@@ -9,6 +9,7 @@ import Welcome from './Compontents/Welcome';
 import { BrowserRouter , Routes, Route, } from "react-router-dom";
 import Checkout from './Compontents/Checkout';
 import Orderconfirmation from './Compontents/Orderconfirmation';
+import ViewProduct from './Compontents/ViewProduct';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path='/welcome' element={<Welcome/>}/>
         <Route path='/Checkout' element={<Checkout></Checkout>}/>
         <Route path='/orderconfirmation' element={<Orderconfirmation></Orderconfirmation>}/>
+        <Route path='/ViewProduct/:id' element={<ViewProduct></ViewProduct>}></Route>
       </Routes></BrowserRouter>
       
   
